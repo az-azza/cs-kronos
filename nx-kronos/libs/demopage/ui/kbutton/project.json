@@ -1,0 +1,9 @@
+{
+  "name": "kbutton",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/demopage/ui/kbutton/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project kbutton --web",
+  "targets": {}
+}

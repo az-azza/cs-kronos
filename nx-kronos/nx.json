@@ -10,7 +10,10 @@
       "!{projectRoot}/.eslintrc.json",
       "!{projectRoot}/eslint.config.js",
       "!{projectRoot}/jest.config.[jt]s",
-      "!{projectRoot}/test-setup.[jt]s"
+      "!{projectRoot}/test-setup.[jt]s",
+      "!{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)",
+      "!{projectRoot}/.storybook/**/*",
+      "!{projectRoot}/tsconfig.storybook.json"
     ],
     "sharedGlobals": []
   },
@@ -36,6 +39,24 @@
       "plugin": "@nx/jest/plugin",
       "options": {
         "targetName": "test"
+      },
+      "exclude": ["apps/api-e2e/**/*"]
+    },
+    {
+      "plugin": "@nx/storybook/plugin",
+      "options": {
+        "serveStorybookTargetName": "storybook",
+        "buildStorybookTargetName": "build-storybook",
+        "testStorybookTargetName": "test-storybook",
+        "staticStorybookTargetName": "static-storybook"
+      }
+    },
+    {
+      "plugin": "@nx/webpack/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "previewTargetName": "preview"
       }
     }
   ],
@@ -52,8 +73,16 @@
       },
       "library": {
         "style": "tailwind",
-        "linter": "eslint"
+        "linter": "eslint",
+        "unitTestRunner": "vitest"
       }
+    }
+  },
+  "targetDefaults": {
+    "@nx/esbuild:esbuild": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   }
 }

@@ -14,7 +14,15 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@kronos/extract-gh-response-header-link-pagination": [
+        "libs/demopage/util/src/index.ts"
+      ],
+      "@kronos/features": ["libs/demopage/features/src/index.ts"],
+      "@kronos/kbutton": ["libs/demopage/ui/kbutton/src/index.ts"],
+      "@kronos/types": ["types/src/index.ts"],
+      "@kronos/ui": ["libs/demopage/ui/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

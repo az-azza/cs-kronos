@@ -1,0 +1,9 @@
+{
+  "name": "extract-gh-response-header-link-pagination",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/demopage/util/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project extract-gh-response-header-link-pagination --web",
+  "targets": {}
+}

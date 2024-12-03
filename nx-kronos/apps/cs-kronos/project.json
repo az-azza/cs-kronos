@@ -1,9 +1,0 @@
-{
-  "name": "cs-kronos",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/cs-kronos/src",
-  "projectType": "application",
-  "tags": [],
-  "// targets": "to see all targets run: nx show project cs-kronos --web",
-  "targets": {}
-}
