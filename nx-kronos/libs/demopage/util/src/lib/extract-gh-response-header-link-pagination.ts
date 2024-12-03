@@ -1,3 +1,5 @@
+import { TLinkPagination } from '@kronos/types';
+
 export function extractGHResponseHeaderLinkPagination(
   link: string
 ): Record<string, number> | undefined {
@@ -7,7 +9,9 @@ export function extractGHResponseHeaderLinkPagination(
   let links = {};
   const arr = link.split(',').map((part) => {
     const [url, name] = part.split(';');
-    const usp =  new URLSearchParams(new URL(url.replace(/<(.*)>/, '$1')).search);
+    const usp = new URLSearchParams(
+      new URL(url.replace(/<(.*)>/, '$1')).search
+    );
     return {
       url: url.replace(/<(.*)>/, '$1').trim(),
       name: name.replace(/rel="(.*)"/, '$1').trim(),
@@ -15,7 +19,7 @@ export function extractGHResponseHeaderLinkPagination(
     };
   });
   links = arr.reduce((a, v) => {
-    const par: Record<string, number> = {};
+    const par: TLinkPagination = {};
     par[v.name] = Number(v.page);
     return { ...a, ...par };
   }, {});

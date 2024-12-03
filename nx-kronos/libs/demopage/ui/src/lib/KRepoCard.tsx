@@ -16,14 +16,14 @@ import { TRepoItem } from '@kronos/types';
 import KButton from './KButton';
 
 export const KRepoCard = ({ item }: { item: TRepoItem }) => {
-  const [imgLoaded, setimgLoaded] = useState(false);
+  const [isImgLoaded, setIsImgLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
   return (
     <Box maxWidth="100%">
       <Card>
         <Flex gap="3" align="center">
-          <Skeleton loading={!imgLoaded}>
+          <Skeleton>
             <Avatar
               size="3"
               ref={imgRef}
@@ -31,26 +31,21 @@ export const KRepoCard = ({ item }: { item: TRepoItem }) => {
               src={item?.owner?.avatar_url}
               radius="full"
               fallback="T"
-              onLoad={() => {
-                setimgLoaded(true);
-              }}
             />
           </Skeleton>
           <Box>
-            <Skeleton loading={!imgLoaded}>
-              <Text as="div" size="2" weight="bold">
-                {item?.name}
-              </Text>
-            </Skeleton>
-            <Skeleton loading={!imgLoaded}>
-              <Text as="div" size="2" color="gray">
-                {item?.description}
-              </Text>
-            </Skeleton>
+            <Text as="div" size="2" weight="bold">
+              {item?.name}
+            </Text>
+            <Text as="div" size="2" color="gray">
+              {item?.description}
+            </Text>
           </Box>
           <Box>
             <Button asChild>
-              <a href="">sdsd</a>
+              <a href={`${item.html_url}`} target="_blank">
+                More
+              </a>
             </Button>
           </Box>
         </Flex>

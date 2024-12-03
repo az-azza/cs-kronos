@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react';
 
-import Githublist from './githublist';
+import GitHubList from './GitHubList';
 
-describe('Githublist', () => {
+describe('GitHubList', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(<Githublist />);
+    const { baseElement } = render(<GitHubList />);
     expect(baseElement).toBeTruthy();
   });
 });

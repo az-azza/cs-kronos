@@ -1,14 +1,40 @@
+import { Dispatch, SetStateAction } from 'react';
+
 export type TRepoItem = {
   id: number;
   name: string;
   description: string;
   created_at: string;
-  watchers: number;
+  watchers_count: number;
+  stargazers_count: number;
   owner: { avatar_url: string };
 };
 
-export type QF = {
+export type TQueryResult = {
   items: Array<TRepoItem>;
   next: number;
-  total_count: number
+  total_count: number;
+};
+
+export type TLinkPagination = Record<string, number>;
+
+export enum EFetchSource {
+  GHSearch = 0,
+  APIProxy = 1,
+  APIMock = 2,
+}
+
+export type TFetchSource =
+  | EFetchSource.GHSearch
+  | EFetchSource.APIProxy
+  | EFetchSource.APIMock;
+
+export interface IFetchSourceContext {
+  fetchSource: TFetchSource;
+  setFetchSource: Dispatch<SetStateAction<TFetchSource>>;
+  }
+
+export interface ILoadingContext {
+  isLoading: boolean;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
 }

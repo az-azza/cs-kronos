@@ -1,1 +1,1 @@
-export * from './lib/githublist';
+export * from './lib/GitHubList';
