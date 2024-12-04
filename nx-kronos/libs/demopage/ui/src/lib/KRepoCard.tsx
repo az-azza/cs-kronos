@@ -1,6 +1,6 @@
 import styles from './KRepoCard.module.css';
 
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import {
   Text,
@@ -12,37 +12,82 @@ import {
   Button,
 } from '@radix-ui/themes';
 
-import { TRepoItem } from '@kronos/types';
-import KButton from './KButton';
+import { tv } from 'tailwind-variants';
 
-export const KRepoCard = ({ item }: { item: TRepoItem }) => {
-  const [isImgLoaded, setIsImgLoaded] = useState(false);
-  const imgRef = useRef<HTMLImageElement>(null);
+import { TRepoItem } from '@kronos/types';
+
+export const KRepoCard = ({
+  item,
+  stargazersMinMax,
+}: {
+  item: TRepoItem;
+  stargazersMinMax?: any;
+}) => {
+  //const imgRef = useRef<HTMLImageElement>(null);
+
+  const heat = tv({
+    base: 'font-small active:opacity-60 p-2 hover:opacity-80 ',
+    variants: {
+      // color: {
+      //   primary: '',
+      //   secondary: 'bg-purple-500',
+      // },
+      // temp: {
+      //   mellow: 'bg-green-500',
+      //   hot: '',
+      // },
+    },
+    compoundVariants: [
+      // {
+      //   size: ['sm', 'md'],
+      //   class: 'px-3 py-1'
+      // }
+    ],
+    defaultVariants: {
+      // temp: 'mellow',
+      // color: 'primary',
+    },
+  });
+
+  // const calcGradient = (minMax, count )=>{
+  //   return Math.round(((minMax.max - minMax.min)/count)*1)*100;
+  // };
+
+  const gradient = ''; //`bg-red-${calcGradient(stargazersMinMax,item.stargazers_count)}`;
+
+  // //console.log(gradient);
 
   return (
     <Box maxWidth="100%">
       <Card>
         <Flex gap="3" align="center">
-          <Skeleton>
-            <Avatar
-              size="3"
-              ref={imgRef}
-              key={item.id + '_1'}
-              src={item?.owner?.avatar_url}
-              radius="full"
-              fallback="T"
-            />
-          </Skeleton>
+          <Avatar
+            size="3"
+            key={item.id + '_1'}
+            src={item?.owner?.avatar_url}
+            radius="full"
+            fallback="T"
+          />
           <Box>
-            <Text as="div" size="2" weight="bold">
-              {item?.name}
-            </Text>
-            <Text as="div" size="2" color="gray">
-              {item?.description}
+            <Text
+              //className={heat({ temp: 'hot' })+' '+gradient}
+              as="div"
+              size="2"
+              weight="bold"
+            >
+              gazing: {item.stargazers_count}
             </Text>
           </Box>
           <Box>
-            <Button asChild>
+            <Text as="div" size="2" weight="bold">
+              {item.name}
+            </Text>
+            <Text as="div" size="2" color="gray">
+              {item.description}
+            </Text>
+          </Box>
+          <Box>
+            <Button>
               <a href={`${item.html_url}`} target="_blank">
                 More
               </a>

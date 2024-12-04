@@ -8,20 +8,22 @@ export type TRepoItem = {
   watchers_count: number;
   stargazers_count: number;
   owner: { avatar_url: string };
+  html_url: string;
 };
+
 
 export type TQueryResult = {
   items: Array<TRepoItem>;
-  next: number;
-  total_count: number;
+  next?: number;
+  total_count?: number;
 };
 
 export type TLinkPagination = Record<string, number>;
 
 export enum EFetchSource {
-  GHSearch = 0,
-  APIProxy = 1,
-  APIMock = 2,
+  GHSearch = 'GHSearch',
+  APIProxy = 'APIProxy',
+  APIMock = 'APIMock',
 }
 
 export type TFetchSource =
@@ -32,7 +34,7 @@ export type TFetchSource =
 export interface IFetchSourceContext {
   fetchSource: TFetchSource;
   setFetchSource: Dispatch<SetStateAction<TFetchSource>>;
-  }
+}
 
 export interface ILoadingContext {
   isLoading: boolean;

@@ -1,5 +1,5 @@
 export default {
-  displayName: 'extract-gh-response-header-link-pagination',
+  displayName: 'util',
   preset: '../../../jest.preset.js',
   testEnvironment: 'node',
   transform: {

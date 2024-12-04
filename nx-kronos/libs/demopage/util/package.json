@@ -1,5 +1,5 @@
 {
-  "name": "@kronos/extract-gh-response-header-link-pagination",
+  "name": "@kronos/util",
   "version": "0.0.1",
   "dependencies": {},
   "private": true

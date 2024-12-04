@@ -4,9 +4,11 @@ import React, {
   createContext,
   useContext,
   Suspense,
+  useRef,
 } from 'react';
 
 import { ErrorBoundary } from 'react-error-boundary';
+import { useInView } from 'react-intersection-observer';
 
 import { tv } from 'tailwind-variants';
 import '@radix-ui/themes/styles.css';
@@ -28,11 +30,11 @@ import {
   QueryErrorResetBoundary,
 } from '@tanstack/react-query';
 
-import { extractGHResponseHeaderLinkPagination } from '@kronos/extract-gh-response-header-link-pagination';
+import ky from 'ky';
+
+import { extractGHResponseHeaderLinkPagination } from '@kronos/util';
 
 // import { ColorContextType, ColorContext } from '../context/ColorContext';
-
-import { useInView } from 'react-intersection-observer';
 
 import {
   TRepoItem,
@@ -59,23 +61,50 @@ const FetchSourceContext = createContext<IFetchSourceContext>({
   },
 });
 
-const GitHubFetchListInfinite = ({ queryFunc }) => {
+const GitHubFetchListInfinite = ({
+  queryKey,
+  queryFunc,
+}: {
+  queryKey: [string, number] | [string];
+  queryFunc: any;
+}) => {
   const { isLoading, setIsLoading } = useContext(LoadingContext);
   const { ref, inView } = useInView();
+  const stargazersMinMax = useRef({});
 
-  const { data, isError, error, isFetching, isPending, fetchNextPage } =
-    useSuspenseInfiniteQuery({
-      queryKey: ['repos'],
-      queryFn: queryFunc,
-      getPreviousPageParam: (firstPage) => {
-        return undefined;
-      },
-      getNextPageParam: (lastPage) => {
-        return lastPage?.next ?? undefined;
-      },
-      initialPageParam: 0,
-      maxPages: 10,
-    });
+  const { data, isFetching, fetchNextPage } = useSuspenseInfiniteQuery({
+    queryKey: queryKey,
+    queryFn: queryFunc,
+    getPreviousPageParam: (firstPage) => {
+      return undefined;
+    },
+    getNextPageParam: (lastPage: { next: number; items: [] }) => {
+      return lastPage?.next ?? undefined;
+    },
+    initialPageParam: 0,
+    maxPages: 10,
+  });
+
+  // const calcMinMaxGazers = (data:InfiniteData) => {
+  //   const collectAll = Array<TRepoItem>;
+  //   data.pages.map((page) => {
+  //   page.items.map((item: TRepoItem) => {
+  //       collectAll.push(item);
+  //     });
+  //   });
+
+  //   const min = collectAll.reduce((v, item) => {
+  //     return item.stargazers_count < v ? item.stargazers_count : v;
+  //   }, collectAll[0].stargazers_count);
+  //   const max = collectAll.reduce((v, item) => {
+  //     return item.stargazers_count > v ? item.stargazers_count : v;
+  //   }, collectAll[0].stargazers_count);
+  //   return { min, max };
+  // };
+
+  // useEffect(() => {
+  //   stargazersMinMax.current = calcMinMaxGazers(data);
+  // }, [data]);
 
   useEffect(() => {
     if (inView) {
@@ -83,22 +112,24 @@ const GitHubFetchListInfinite = ({ queryFunc }) => {
     }
   }, [fetchNextPage, inView]);
 
+  useEffect(() => {
+    setIsLoading(isFetching);
+  }, [isFetching, setIsLoading]);
+
   return (
     <div>
       <Container>
         <div className="grid grid-cols-1 gap-6">
-          {data &&
-            data.pages &&
-            data.pages.map((page, i) => (
-              <React.Fragment key={i}>
-                {
-                  page &&
-                  page?.items:TRepoItem[] &&
-                  page?.items.map((item: TRepoItem, j: number) => (
-                    <KRepoCard item={item} key={j} />
-                  ))}
-              </React.Fragment>
-            ))}
+          {data.pages.map((page, i) => (
+            <React.Fragment key={i}>
+              {page.items.map((item: TRepoItem, j: number) => (
+                <KRepoCard
+                  item={item}
+                  key={j}
+                />
+              ))}
+            </React.Fragment>
+          ))}
         </div>
         <div className="pt-10 pb-10" ref={ref}>
           {isLoading ? 'Updating...' : 'Done loading'}
@@ -124,8 +155,9 @@ export const GitHubList = () => {
     const url =
       'https://api.github.com/search/repositories?q=language:typescript&sort=stars&order=desc&per_page=10' +
       `&page=${pageParam}`;
-    const res = await fetch(url);
-    const resj = await res.json();
+    const res = await ky(url);
+    const resj = await res.json<TQueryResult>();
+
     const hl = res.headers.has('link') ? res.headers.get('link') : undefined;
     return {
       ...resj,
@@ -139,15 +171,15 @@ export const GitHubList = () => {
     pageParam: number;
   }): Promise<TQueryResult> => {
     const url = 'http://localhost:3000/getGitHubTrendingDaily';
-    const response = await fetch(url);
-    const resj = await response.json();
+    const response = await ky(url);
+    const response_json = await response.json<TQueryResult>();
 
-    const hl = response.headers.has('link')
+    const headers_link = response.headers.has('link')
       ? response.headers.get('link')
       : undefined;
     return {
-      ...resj,
-      ...extractGHResponseHeaderLinkPagination(hl as string),
+      ...response_json,
+      ...extractGHResponseHeaderLinkPagination(headers_link as string),
     };
   };
 
@@ -157,15 +189,15 @@ export const GitHubList = () => {
     pageParam: number;
   }): Promise<TQueryResult> => {
     const url = 'http://localhost:3000/mockrepos';
-    const response = await fetch(url);
-    const resj = await response.json();
+    const response = await ky(url);
+    const response_json = await response.json<TQueryResult>();
 
-    const hl = response.headers.has('link')
+    const headers_link = response.headers.has('link')
       ? response.headers.get('link')
       : undefined;
     return {
-      ...resj,
-      ...extractGHResponseHeaderLinkPagination(hl as string),
+      ...response_json,
+      ...extractGHResponseHeaderLinkPagination(headers_link as string),
     };
   };
 
@@ -250,18 +282,23 @@ export const GitHubList = () => {
                     <QueryClientProvider client={queryClient}>
                       {fetchSource === EFetchSource.GHSearch && (
                         <GitHubFetchListInfinite
+                          queryKey={[EFetchSource.GHSearch]}
                           queryFunc={queryFuncGHSearch}
                         />
                       )}
 
                       {fetchSource === EFetchSource.APIProxy && (
                         <GitHubFetchListInfinite
+                          queryKey={[EFetchSource.APIProxy]}
                           queryFunc={queryFuncAPIProxyTrending}
                         />
                       )}
 
                       {fetchSource === EFetchSource.APIMock && (
-                        <GitHubFetchListInfinite queryFunc={queryFuncAPIMock} />
+                        <GitHubFetchListInfinite
+                          queryKey={[EFetchSource.APIMock]}
+                          queryFunc={queryFuncAPIMock}
+                        />
                       )}
                     </QueryClientProvider>
                   </ErrorBoundary>
